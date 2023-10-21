@@ -62,7 +62,58 @@ jobs:
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-     
+
+-  job: Database
+   displayName: Build Database
+   pool:
+    vmImage: "windows-2019"
+
+
+   steps:
+   - task: MSBuild@1
+     inputs:
+      solution: 'WebApp.Database/WebApp.Database.sqlproj'
+      msbuildArguments: '/p:OutDir=$(Build.ArtifactStagingDirectory)'
+   - task: PublishBuildArtifacts@1
+     inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'dacpac'
+
+-   job: Selenium
+    displayName : Build UI test
+    pool: 
+      vmImage: 'windows-2019'
+  steps:
+
+  - task: NuGetToolInstaller@1
+    displayName: 'Use NuGet 4.3.0'
+  - task: NuGetCommand@2
+    inputs:
+      command: 'restore'
+      restoreSolution: '**/*.sln'
+  - task: MSBuild@1
+    inputs:
+        solution: 'SeleniumUiTests/SeleniumUiTests.csproj'
+        msbuildArguments: '/p:OutDir=$(Build.ArtifactStagingDirectory)'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'UI-Test'
+
+- job: Infrastructure
+   displayName: 'Copy Infrastructure files (ARM)'
+   pool:
+    vmImage: 'ubuntu-latest'
+
+   steps:
+   - task: PublishBuildArtifacts@1
+     displayName: 'Publish Artifact: ARM templates'
+     inputs:
+      PathtoPublish: AzureResourceGroupDeployment
+      ArtifactName: arm   
+
+      
+
   
 
 
