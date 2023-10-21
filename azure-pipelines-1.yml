@@ -65,6 +65,10 @@ jobs:
 
 -  job: Database
    displayName: Build Database
+   dependsOn: WebApp
+   pool:
+    vmImage: 'windows-2019'
+    
   
 
 
@@ -80,6 +84,11 @@ jobs:
 
 -   job: Selenium
     displayName : Build UI test
+    dependsOn: 
+    - WebApp
+    - Database
+    pool:
+     vmImage: 'windows-2019'
     
 
     steps:
@@ -102,6 +111,12 @@ jobs:
        ArtifactName: 'UI-Test'
 
 -    job: Infrastructure
+     dependsOn: 
+     - WebApp
+     - Database
+     - Selenium
+     pool:
+      vmImage: 'windows-2019'
      
 
      steps:
