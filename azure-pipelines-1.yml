@@ -65,8 +65,7 @@ jobs:
 
 -  job: Database
    displayName: Build Database
-   pool:
-    vmImage: "windows-2019"
+  
 
 
    steps:
@@ -81,8 +80,7 @@ jobs:
 
 -   job: Selenium
     displayName : Build UI test
-    pool: 
-      vmImage: 'windows-2019'
+    
 
     steps:
 
@@ -104,8 +102,7 @@ jobs:
        ArtifactName: 'UI-Test'
 
 -    job: Infrastructure
-     pool:
-      vmImage: 'ubuntu-latest'
+     
 
      steps:
      - task: PublishBuildArtifacts@1
