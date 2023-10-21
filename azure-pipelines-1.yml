@@ -1,0 +1,70 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- master
+
+jobs:
+- job: WebApp
+  displayName: 'Build Web App'
+  pool:
+    vmImage: 'windows-2019'
+  variables:
+    BuildConfiguration: release
+
+  steps:
+  
+  - task: UseDotNet@2
+    displayName: Install .NET 6 sdk
+    inputs:
+      packageType: sdk
+      version: 6.0.x
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'restore'
+      projects: '**/WebApp.csproj'
+      feedsToUse: 'select'
+  - task: SonarCloudPrepare@1
+    displayName : Prepare analysis on SonarCloud
+    inputs:
+      SonarCloud: 'devops-sonarcloud'
+      organization: 'devops-sonarcloud123'
+      scannerMode: 'MSBuild'
+      projectKey: 'adarshhl_CI-CD-course'
+      projectName: 'CI-CD course'
+  - task: DotNetCoreCLI@2
+    inputs:
+     command: 'build'
+     projects: '**/Webapp.csproj'
+     arguments: '--configuration $(BuildConfiguration)' 
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'test'
+      projects: '**/*UnitTest*.csproj'
+      arguments: '--configuration $(BuildConfiguration)'
+  
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'publish'
+      publishWebProjects: true
+      arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    
+  - task: SonarCloudAnalyze@1
+    inputs:
+      jdkversion: 'JAVA_HOME_17_X64'
+  - task: SonarCloudPublish@1
+    inputs:
+      pollingTimeoutSec: '300'
+    
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+     
+  
+
+
+
+
