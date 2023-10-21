@@ -83,7 +83,7 @@ jobs:
     displayName : Build UI test
     pool: 
       vmImage: 'windows-2019'
-  steps:
+steps:
 
   - task: NuGetToolInstaller@1
     displayName: 'Use NuGet 4.3.0'
@@ -91,26 +91,30 @@ jobs:
     inputs:
       command: 'restore'
       restoreSolution: '**/*.sln'
+
   - task: MSBuild@1
     inputs:
         solution: 'SeleniumUiTests/SeleniumUiTests.csproj'
         msbuildArguments: '/p:OutDir=$(Build.ArtifactStagingDirectory)'
-  - task: PublishBuildArtifacts@1
+
+  task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: UI-Test'
     inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
       ArtifactName: 'UI-Test'
 
-- job: Infrastructure
-   displayName: 'Copy Infrastructure files (ARM)'
+-  job: Database
+   displayName: Build Database
    pool:
-    vmImage: 'ubuntu-latest'
-
-   steps:
-   - task: PublishBuildArtifacts@1
-     displayName: 'Publish Artifact: ARM templates'
-     inputs:
+    vmImage: "windows-2019"
+  steps:  
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: ARM templates'
+    inputs:
       PathtoPublish: AzureResourceGroupDeployment
       ArtifactName: arm   
+
+
+   
 
       
 
